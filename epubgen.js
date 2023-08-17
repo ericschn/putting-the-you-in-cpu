@@ -1,3 +1,7 @@
+// This generates a new markdown file 'cpu-epub.md'
+// After generation, run:
+// pandoc cpu-epub.md -o putting-the-you-in-cpu.epub --toc-depth=1
+
 const fs = require('fs/promises');
 const chaptersDir = 'src/content/chapters/';
 const imagesDir = 'public/images/';
@@ -9,7 +13,7 @@ creator:
 - role: author
   text: Hack Club
 description: A technical explainer of how your computer runs programs, from start to finish.
-cover-image: public/images/cpu-pleading-face.png
+cover-image: public/images/epub-cover.jpg
 ---`;
 
 async function getChapterFilenames() {
@@ -23,10 +27,6 @@ async function readChapter(chapterFilename) {
   const chapterNumber = chapter.match(/^chapter:\s(\d+)$/m)[1];
 
   const cleanedChapter = chapter
-    .replace(
-      /^---.+?---/s,
-      `<h1 id="${slug}">Chapter ${chapterNumber}: ${title}</h1>`
-    )
     .replaceAll('/images/', imagesDir)
     .replaceAll('(/', '(#')
     .replace(/\s?(style|loading|height)='.+?'/g, '')
@@ -36,6 +36,10 @@ async function readChapter(chapterFilename) {
     .replace(/\s*?<\/?(p|div)>/gm, '')
     .replace(/^<iframe.+$/gm, '')
     .replace(/^(\t|\s\s)<img/gm, '<img')
+    .replace(
+      /^---.+?---/s,
+      `<div id="${slug}"></div>\n\n# Chapter ${chapterNumber}: ${title}`
+    )
     .trim();
 
   return cleanedChapter;
@@ -49,7 +53,7 @@ async function go() {
   }
   Promise.all(chapters).then((chapterArray) => {
     chapterArray.unshift(bookMeta);
-    fs.writeFile('TEST-MD.md', chapterArray.join('\n\n')).then(() => {
+    fs.writeFile('cpu-epub.md', chapterArray.join('\n\n')).then(() => {
       console.log('done');
     });
   });
