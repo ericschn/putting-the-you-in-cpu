@@ -31,14 +31,14 @@ async function readChapter(chapterFilename) {
     .replaceAll('(/', '(#')
     .replace(/\s?(style|loading|height)='.+?'/g, '')
     .replace(/width='.+?'/g, "width='100%'")
-    .replace(/^import\sCode.+$/gm, '')
+    .replace(/^import\sCode.+\n$/gm, '')
     .replace(/^<\/?CodeBlock.+\n?$/gm, '')
     .replace(/\s*?<\/?(p|div)>/gm, '')
     .replace(/^<iframe.+$/gm, '')
     .replace(/^(\t|\s\s)<img/gm, '<img')
     .replace(
-      /^---.+?---/s,
-      `<div id="${slug}"></div>\n\n# Chapter ${chapterNumber}: ${title}`
+      /^---.+?---\n/s,
+      `# Chapter ${chapterNumber}: ${title}\n\n<div id="${slug}"></div>`
     )
     .trim();
 
